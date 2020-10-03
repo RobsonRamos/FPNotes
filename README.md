@@ -1,13 +1,16 @@
 # FPNotes
 Functional programming notes and concepts
 
+
 Imperative Programming
+
 Imperative programming is a programming paradigm that uses statements that change a program’s state. It consists of a series of commands for the computer to perform. It focuses on describing the details of how a program operates.
 
 What is FP? 
 
 -	FP applications consist of only immutable values and pure functions. 
 -	Pure function means that (a) a function’s output depends only on its input parameters, and (b) functions have no side effects, such as reading user input or writing output to a screen, disk, web service, etc. 
+
 “Functional code is characterized by one thing: the absence of side effects. It (a pure function) doesn’t rely on data outside the current function, and it doesn’t change data that exists outside the current function. Every other ‘functional’ thing can be derived from this property. Use it as a guide rope as you learn.”  
 
 but why immutable values? 
@@ -37,7 +40,7 @@ When you write pure functional code, you write a series of expressions that comb
 order.calculateTaxes()
 order.updatePrices() 
 
-Those two lines of code are statements because they don’t have a return value; they’re just executed for their side effects. In FP and EOP you write those same statements as expressions , like this: 
+Those two lines of code are statements because they don’t have a return value; they’re just executed for their side effects. In FP and EOP you write those same statements as expressions, like this: 
 val tax = calculateTax(order)
 val price = calculatePrice(order) 
 
@@ -53,11 +56,12 @@ result = f2(z)
 That’s all it means. The Wikipedia page on Currying describes the theory of currying like this: 
 In mathematics and computer science, currying is the technique of translating the evaluation of a function that takes multiple arguments into evaluating a sequence of functions, each with a single argument. 
 They later state: There are analytical techniques that can only be applied to functions with a single argument. Practical functions frequently take more arguments than this.  
-Partial Application : This is the process of applying a function to some of its arguments. A partially-applied function gets returned for later use. In other words, a PAF is a function that takes a function with multiple parameters and returns a function with fewer parameters.  
+Partial Application: This is the process of applying a function to some of its arguments. A partially-applied function gets returned for later use. In other words, a PAF is a function that takes a function with multiple parameters and returns a function with fewer parameters.  
 In the first step, you define a function with multiple parameter groups: 
 
 scala> def plus(a: Int)(b: Int) = a + b
 plus: (a: Int)(b: Int)Int 
+
 Next, rather than giving the function all of the parameters in the two parameter groups it specifies, you give it (a) the parameter for the first group ( a ), and (b) a placeholder for the parameter in the second list, the ubiquitous underscore character: 
 scala> def plus2 = plus(2)(_)
 plus2: Int => Int 
@@ -68,6 +72,7 @@ res0: Int = 4
 scala> plus2(3)
 res1: Int = 5 
 Currying
+
 You can create curried functions from “normal” Scala functions. For instance, you can start with a “normal” one-parameter group function like this: 
 def add(x: Int, y: Int) = x + y 
 Then they show that you can create a Function2 instance from add by adding an underscore after it, like this: 
@@ -82,6 +87,7 @@ As this shows, calling the curried method on the add function instance creates a
 
 
 Currying vs partially-applied functions 
+
 The concepts of currying and partially-applied functions are closely related, but they aren’t exactly the same. As I wrote at the beginning, currying is defined like this:
 A function that takes multiple arguments can be translated into a series of function calls that each take a single argument. 
 This is particularly important in a language like Haskell, where all functions are technically curried functions. In Scala this is generally a theoretical thing that’s good to know about, and it’s good to know that you can create a curried function from an uncurried function, but these aren’t “core” features you absolutely need to know to write code in Scala. 
@@ -143,4 +149,27 @@ Pure functions never throw exceptions.
 Think of it this way: the signature of a pure function is a binding contract with the consumer of that function. If the function signature says it returns an Int : 
 def foo(a: String): Int = ... 
 then it must return an Int . Importantly, it can’t return an Int most of the time and throw an exception some of the time. If a function was to behave like that, its signature would be a lie.  
-Rather than throwing exceptions, the Scala/FP idiom is to handle exceptions inside your functions and return an Option.  
+Rather than throwing exceptions, the Scala/FP idiom is to handle exceptions inside your functions and return an Option. 
+
+Monad
+
+Where “monad” used to be a scary name, now you know that it just means that a data type implements map and flatMap methods so it can be used in for expressions. I tend to call these things “wrappers,” and indeed, the IO monad is just another wrapper data type. The great thing about that box is that the for expression knows how to open it, and pull the String out of it.  
+
+Domain Model
+
+In FP, the data and the operators on that data are two separate things; you aren’t forced to encapsulate them together like you do with OOP. The concept is like numerical algebra. When you think about whole numbers whose values are greater than or equal to zero, you have a set of possible values that looks like this: 
+0, 1, 2 ... Int.MaxInt 
+Ignoring the division of whole numbers, the possible operators on those values are: 
++, , * 
+An FP design is implemented in a similar way:
+- You have a set of values 
+- You have a collection of operators that work on those values
+
+Modeling the “data” portion of a domain model in Scala/FP is simple: 
+-	Model the data as case classes with immutable fields.  
+By separating the data from the operations on that data, the data attributes and relationships are clear. The data model is easy to read, like declaring the design for a relational database.  Where OOP practitioners describe their classes as “rich domain models” that encapsulate data and behaviors, FP data models can be thought of as “skinny domain objects.” This is because, the data models are defined as case classes with attributes, but no behaviors.  
+ When it comes to modeling behaviors several different possible approaches: 
+-	Put your functions in “Utils” classes 
+-	-Put your functions in companion objects 
+-	Use a modular programming style 
+-	Use a “functional objects” approach 
