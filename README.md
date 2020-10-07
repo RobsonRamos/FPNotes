@@ -113,14 +113,14 @@ When you make this change, the final code looks like this:
 ```
 // tail-recursive solution
 def sum(list: List[Int]): Int = {
-@tailrec
-def sumWithAccumulator(list: List[Int], currentSum: Int): Int = {
-list match {
-case Nil => currentSum
-case x :: xs => sumWithAccumulator(xs, currentSum + x)
-}
-}
-sumWithAccumulator(list, 0)
+      @tailrec
+      def sumWithAccumulator(list: List[Int], currentSum: Int): Int = {
+            list match {
+                  case Nil => currentSum
+                  case x :: xs => sumWithAccumulator(xs, currentSum + x)
+            }
+      }
+      sumWithAccumulator(list, 0)
 } 
 ```
 ## State in FP aplications
@@ -145,13 +145,13 @@ Here’s a simple example of each of these features in a Scala for comprehension
 case class Person(firstName: String, lastName: String)
 
    val people = List(
-                            Person("barney", "rubble"),
-                            Person("fred", "flintstone")
+                       Person("barney", "rubble"),
+                       Person("fred", "flintstone")
    )
    val namesStartingWithB = for {
-                            p <-people // generator
-                            fname = p.firstName // definition
-                            if (fname startsWith "b") // filter   
+                       p <-people // generator
+                       fname = p.firstName // definition
+                       if (fname startsWith "b") // filter   
 } yield fname.toUpperCase 
 ```
 
@@ -168,29 +168,3 @@ Rather than throwing exceptions, the Scala/FP idiom is to handle exceptions insi
 ## Monad
 
 Where “monad” used to be a scary name, now you know that it just means that a data type implements map and flatMap methods so it can be used in for expressions. I tend to call these things “wrappers,” and indeed, the IO monad is just another wrapper data type. The great thing about that box is that the for expression knows how to open it, and pull the String out of it.  
-
-## Domain Model
-
-In FP, the data and the operators on that data are two separate things; you aren’t forced to encapsulate them together like you do with OOP. The concept is like numerical algebra. When you think about whole numbers whose values are greater than or equal to zero, you have a set of possible values that looks like this: 
-```
-0, 1, 2 ... Int.MaxInt 
-```
-
-Ignoring the division of whole numbers, the possible operators on those values are: 
-+, , * 
-An FP design is implemented in a similar way:
-- You have a set of values 
-- You have a collection of operators that work on those values
-
-Modeling the “data” portion of a domain model in Scala/FP is simple: 
--	Model the data as case classes with immutable fields.  
-By separating the data from the operations on that data, the data attributes and relationships are clear. The data model is easy to read, like declaring the design for a relational database.  Where OOP practitioners describe their classes as “rich domain models” that encapsulate data and behaviors, FP data models can be thought of as “skinny domain objects.” This is because, the data models are defined as case classes with attributes, but no behaviors.  
- When it comes to modeling behaviors several different possible approaches: 
--	Put your functions in “Utils” classes 
--	Put your functions in companion objects 
--	Use a modular programming style 
--	Use a “functional objects” approach 
-
-## Concurrency
-
-Programming in a functional style makes the state presented to your code explicit, which makes it much easier to reason about, and, in a completely pure system, makes thread race conditions impossible: “Immutable objects are always thread-safe.” 
